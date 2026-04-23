@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>故事接龍大冒險 🌈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-time: #FFB84D;
+    --color-adj: #FF7FB6;
+    --color-person: #FF6B6B;
+    --color-place: #5EC57F;
+    --color-action: #4FC3E0;
+    --color-thing: #B57EDC;
+
+    --time-bg: #FFF4D6;
+    --adj-bg: #FFE0EF;
+    --person-bg: #FFDDDD;
+    --place-bg: #DDF5E3;
+    --action-bg: #D9F0F7;
+    --thing-bg: #EEE0FA;
+
+    --cream: #FFF9EC;
+    --paper: #FFFDF5;
+    --ink: #3D2B1F;
+    --ink-soft: #6B4E3D;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100vh;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(255, 184, 77, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 15%, rgba(255, 127, 182, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(94, 197, 127, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 10% 85%, rgba(79, 195, 224, 0.12) 0%, transparent 40%);
+    overflow-x: hidden;
+  }
+
+  .floater {
+    position: fixed;
+    font-size: 3rem;
+    opacity: 0.5;
+    pointer-events: none;
+    animation: float 8s ease-in-out infinite;
+    z-index: 0;
+  }
+  .floater:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; }
+  .floater:nth-child(2) { top: 12%; right: 7%; animation-delay: 1.5s; }
+  .floater:nth-child(3) { bottom: 15%; left: 8%; animation-delay: 3s; }
+  .floater:nth-child(4) { bottom: 10%; right: 5%; animation-delay: 4.5s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
+  .app {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .screen { display: none; animation: fadeIn 0.5s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== 歡迎畫面 ===== */
+  .welcome { text-align: center; padding: 40px 20px; }
+
+  .welcome h1 {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 20px;
+    line-height: 1.2;
+    letter-spacing: 2px;
+  }
+
+  .title-rainbow span { display: inline-block; animation: wave 2s ease-in-out infinite; }
+  .title-rainbow span:nth-child(1) { color: var(--color-time); animation-delay: 0s; }
+  .title-rainbow span:nth-child(2) { color: var(--color-adj); animation-delay: 0.1s; }
+  .title-rainbow span:nth-child(3) { color: var(--color-person); animation-delay: 0.2s; }
+  .title-rainbow span:nth-child(4) { color: var(--color-place); animation-delay: 0.3s; }
+  .title-rainbow span:nth-child(5) { color: var(--color-action); animation-delay: 0.4s; }
+  .title-rainbow span:nth-child(6) { color: var(--color-thing); animation-delay: 0.5s; }
+  .title-rainbow span:nth-child(7) { color: var(--color-time); animation-delay: 0.6s; }
+  .title-rainbow span:nth-child(8) { color: var(--color-adj); animation-delay: 0.7s; }
+
+  @keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: var(--ink-soft);
+    margin-bottom: 36px;
+    font-family: 'LXGW WenKai TC', serif;
+  }
+
+  .intro-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 14px;
+    max-width: 760px;
+    margin: 0 auto 30px;
+  }
+
+  .intro-card {
+    background: var(--paper);
+    border: 3px dashed var(--ink-soft);
+    border-radius: 18px;
+    padding: 16px 10px;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .intro-card:hover { transform: rotate(-3deg) scale(1.05); }
+  .intro-card .icon { font-size: 2.2rem; margin-bottom: 6px; display: block; }
+  .intro-card .label {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  .intro-card[data-cat="time"] { border-color: var(--color-time); background: var(--time-bg); }
+  .intro-card[data-cat="adj"] { border-color: var(--color-adj); background: var(--adj-bg); }
+  .intro-card[data-cat="person"] { border-color: var(--color-person); background: var(--person-bg); }
+  .intro-card[data-cat="place"] { border-color: var(--color-place); background: var(--place-bg); }
+  .intro-card[data-cat="action"] { border-color: var(--color-action); background: var(--action-bg); }
+  .intro-card[data-cat="thing"] { border-color: var(--color-thing); background: var(--thing-bg); }
+
+  .intro-card[data-cat="time"] .label { color: #C88A2A; }
+  .intro-card[data-cat="adj"] .label { color: #D94B8A; }
+  .intro-card[data-cat="person"] .label { color: #D14545; }
+  .intro-card[data-cat="place"] .label { color: #3A9B5A; }
+  .intro-card[data-cat="action"] .label { color: #2B95B5; }
+  .intro-card[data-cat="thing"] .label { color: #8A5BB8; }
+
+  .welcome-note {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    padding: 14px 20px;
+    background: var(--paper);
+    border: 2px dashed var(--ink-soft);
+    border-radius: 18px;
+    display: inline-block;
+  }
+  .welcome-note b { color: var(--color-person); }
+
+  /* 按鈕 */
+  .big-btn {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #FF7FB6 0%, #FF6B6B 100%);
+    border: 4px solid var(--ink);
+    border-radius: 999px;
+    padding: 16px 48px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 var(--ink);
+    transition: all 0.15s ease;
+    letter-spacing: 3px;
+  }
+  .big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--ink); }
+  .big-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+
+  .secondary-btn {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--ink);
+    transition: all 0.15s ease;
+  }
+  .secondary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--ink); }
+  .secondary-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+
+  /* ===== 輪數進度 ===== */
+  .round-indicator {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .round-label {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .round-label .current-round {
+    color: var(--color-person);
+    font-size: 1.4rem;
+  }
+  .round-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  .round-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid var(--ink-soft);
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'LXGW WenKai TC', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+  }
+  .round-dot.done {
+    background: linear-gradient(135deg, #FFB84D, #FF7FB6);
+    border-color: var(--ink);
+    color: white;
+  }
+  .round-dot.current {
+    border-color: var(--color-person);
+    color: var(--color-person);
+    animation: bounce 1s ease-in-out infinite;
+    background: var(--person-bg);
+  }
+  @keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  /* ===== 遊戲進度槽 ===== */
+  .progress-slots {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .slot {
+    background: var(--paper);
+    border: 3px solid #DDD;
+    border-radius: 14px;
+    padding: 10px 4px;
+    text-align: center;
+    min-height: 76px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .slot .slot-icon { font-size: 1.4rem; margin-bottom: 2px; }
+  .slot .slot-label {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    font-weight: 700;
+  }
+  .slot .slot-value {
+    font-family: 'LXGW WenKai TC', serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    margin-top: 4px;
+    line-height: 1.1;
+    word-break: break-all;
+  }
+
+  .slot.current { transform: scale(1.08); animation: pulse 1.5s ease-in-out infinite; }
+  .slot.current[data-cat="time"] { border-color: var(--color-time); background: var(--time-bg); }
+  .slot.current[data-cat="adj"] { border-color: var(--color-adj); background: var(--adj-bg); }
+  .slot.current[data-cat="person"] { border-color: var(--color-person); background: var(--person-bg); }
+  .slot.current[data-cat="place"] { border-color: var(--color-place); background: var(--place-bg); }
+  .slot.current[data-cat="action"] { border-color: var(--color-action); background: var(--action-bg); }
+  .slot.current[data-cat="thing"] { border-color: var(--color-thing); background: var(--thing-bg); }
+
+  .slot.filled { border-style: solid; }
+  .slot.filled[data-cat="time"] { background: var(--time-bg); border-color: var(--color-time); }
+  .slot.filled[data-cat="adj"] { background: var(--adj-bg); border-color: var(--color-adj); }
+  .slot.filled[data-cat="person"] { background: var(--person-bg); border-color: var(--color-person); }
+  .slot.filled[data-cat="place"] { background: var(--place-bg); border-color: var(--color-place); }
+  .slot.filled[data-cat="action"] { background: var(--action-bg); border-color: var(--color-action); }
+  .slot.filled[data-cat="thing"] { background: var(--thing-bg); border-color: var(--color-thing); }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0.1); }
+    50% { box-shadow: 0 0 0 8px rgba(0,0,0,0); }
+  }
+
+  /* 題目區 */
+  .prompt-box {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 24px 20px;
+    border-radius: 24px;
+    border: 4px solid var(--ink);
+    box-shadow: 0 6px 0 var(--ink);
+    transition: background 0.3s ease;
+  }
+
+  .prompt-box[data-cat="time"] { background: var(--time-bg); }
+  .prompt-box[data-cat="adj"] { background: var(--adj-bg); }
+  .prompt-box[data-cat="person"] { background: var(--person-bg); }
+  .prompt-box[data-cat="place"] { background: var(--place-bg); }
+  .prompt-box[data-cat="action"] { background: var(--action-bg); }
+  .prompt-box[data-cat="thing"] { background: var(--thing-bg); }
+
+  .prompt-step {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .prompt-title {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .prompt-title .prompt-icon { font-size: 2.4rem; margin-right: 10px; }
+  .prompt-hint {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* ===== 輸入區 ===== */
+  .input-area { max-width: 560px; margin: 0 auto 20px; }
+
+  .big-input {
+    width: 100%;
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 18px 24px;
+    border: 4px solid var(--ink);
+    border-radius: 20px;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 6px 0 var(--ink);
+    transition: all 0.2s ease;
+    outline: none;
+  }
+  .big-input::placeholder {
+    color: #BBB;
+    font-weight: 400;
+    font-size: 1.3rem;
+  }
+  .big-input:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 var(--ink);
+  }
+  .big-input.shake {
+    animation: shake 0.4s ease;
+    border-color: #E74C3C;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+
+  .hint-bar { display: flex; justify-content: center; margin-top: 14px; }
+
+  .hint-btn {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 2px dashed var(--ink-soft);
+    border-radius: 999px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .hint-btn:hover { color: var(--ink); border-color: var(--ink); transform: scale(1.05); }
+
+  .hint-panel {
+    max-width: 560px;
+    margin: 16px auto 0;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 0 var(--ink);
+    display: none;
+  }
+  .hint-panel.show { display: block; animation: fadeIn 0.3s ease; }
+  .hint-panel-title {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1rem;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .hint-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .hint-chip {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 2px solid;
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .hint-chip:hover { transform: translateY(-3px) scale(1.05); }
+  .hint-chip[data-cat="time"] { border-color: var(--color-time); color: #C88A2A; }
+  .hint-chip[data-cat="adj"] { border-color: var(--color-adj); color: #D94B8A; }
+  .hint-chip[data-cat="person"] { border-color: var(--color-person); color: #D14545; }
+  .hint-chip[data-cat="place"] { border-color: var(--color-place); color: #3A9B5A; }
+  .hint-chip[data-cat="action"] { border-color: var(--color-action); color: #2B95B5; }
+  .hint-chip[data-cat="thing"] { border-color: var(--color-thing); color: #8A5BB8; }
+
+  .hint-chip[data-cat="time"]:hover { background: var(--time-bg); }
+  .hint-chip[data-cat="adj"]:hover { background: var(--adj-bg); }
+  .hint-chip[data-cat="person"]:hover { background: var(--person-bg); }
+  .hint-chip[data-cat="place"]:hover { background: var(--place-bg); }
+  .hint-chip[data-cat="action"]:hover { background: var(--action-bg); }
+  .hint-chip[data-cat="thing"]:hover { background: var(--thing-bg); }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  /* ===== 段落過場畫面 ===== */
+  .interlude { text-align: center; padding: 20px 0 40px; }
+  .interlude-title {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--ink);
+  }
+  .interlude-title .em { display: inline-block; animation: wiggle 1s ease-in-out infinite; }
+
+  .interlude-subtitle {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.2rem;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+  }
+
+  .interlude-summary {
+    max-width: 620px;
+    margin: 0 auto 32px;
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    border-radius: 24px;
+    padding: 28px 20px;
+    box-shadow: 0 8px 0 var(--ink);
+  }
+  .interlude-summary-title {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+  .interlude-words {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .interlude-word {
+    padding: 12px 8px;
+    border-radius: 14px;
+    border: 3px solid;
+    font-family: 'LXGW WenKai TC', serif;
+    font-weight: 700;
+    animation: popIn 0.4s ease backwards;
+  }
+  .interlude-word:nth-child(1) { animation-delay: 0.1s; }
+  .interlude-word:nth-child(2) { animation-delay: 0.2s; }
+  .interlude-word:nth-child(3) { animation-delay: 0.3s; }
+  .interlude-word:nth-child(4) { animation-delay: 0.4s; }
+  .interlude-word:nth-child(5) { animation-delay: 0.5s; }
+  .interlude-word:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .interlude-word[data-cat="time"] { background: var(--time-bg); border-color: var(--color-time); }
+  .interlude-word[data-cat="adj"] { background: var(--adj-bg); border-color: var(--color-adj); }
+  .interlude-word[data-cat="person"] { background: var(--person-bg); border-color: var(--color-person); }
+  .interlude-word[data-cat="place"] { background: var(--place-bg); border-color: var(--color-place); }
+  .interlude-word[data-cat="action"] { background: var(--action-bg); border-color: var(--color-action); }
+  .interlude-word[data-cat="thing"] { background: var(--thing-bg); border-color: var(--color-thing); }
+
+  .interlude-word .label {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .interlude-word .value {
+    font-size: 1.25rem;
+    color: var(--ink);
+    word-break: break-all;
+  }
+
+  /* ===== 故事畫面 ===== */
+  .story-screen { text-align: center; padding: 20px 0; }
+
+  .celebrate-title {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  .celebrate-title .em { display: inline-block; animation: wiggle 1s ease-in-out infinite; }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+  }
+
+  .story-paper {
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    border-radius: 24px;
+    padding: 48px 32px 40px;
+    margin: 0 auto 24px;
+    max-width: 760px;
+    box-shadow: 0 8px 0 var(--ink);
+    position: relative;
+    text-align: left;
+  }
+
+  .story-paper::before {
+    content: "📖";
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cream);
+    padding: 0 12px;
+    font-size: 2.2rem;
+  }
+
+  .story-label {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1rem;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+
+  .story-body {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: clamp(1.2rem, 2.7vw, 1.6rem);
+    font-weight: 700;
+    line-height: 2.2;
+    color: var(--ink);
+  }
+
+  .story-paragraph {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px dashed #E8DFC9;
+    opacity: 0;
+    animation: slideIn 0.6s ease forwards;
+  }
+  .story-paragraph:last-child { border-bottom: none; }
+  .story-paragraph:nth-child(1) { animation-delay: 0.2s; }
+  .story-paragraph:nth-child(2) { animation-delay: 1s; }
+  .story-paragraph:nth-child(3) { animation-delay: 1.8s; }
+  .story-paragraph:nth-child(4) { animation-delay: 2.6s; }
+
+  .story-paragraph-label {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    font-weight: 400;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .story-body .w {
+    display: inline-block;
+    padding: 2px 10px;
+    margin: 2px 2px;
+    border-radius: 10px;
+    border: 2px solid;
+  }
+  .story-body .w[data-cat="time"] { background: var(--time-bg); border-color: var(--color-time); }
+  .story-body .w[data-cat="adj"] { background: var(--adj-bg); border-color: var(--color-adj); }
+  .story-body .w[data-cat="person"] { background: var(--person-bg); border-color: var(--color-person); }
+  .story-body .w[data-cat="place"] { background: var(--place-bg); border-color: var(--color-place); }
+  .story-body .w[data-cat="action"] { background: var(--action-bg); border-color: var(--color-action); }
+  .story-body .w[data-cat="thing"] { background: var(--thing-bg); border-color: var(--color-thing); }
+
+  .story-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  /* 彩帶 */
+  .confetti {
+    position: fixed;
+    top: -20px;
+    width: 12px;
+    height: 12px;
+    z-index: 100;
+    pointer-events: none;
+    animation: fall 3s linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* 手機適應 */
+  @media (max-width: 640px) {
+    .progress-slots { grid-template-columns: repeat(3, 1fr); }
+    .slot { min-height: 68px; }
+    .intro-cards { grid-template-columns: repeat(2, 1fr); }
+    .prompt-title { font-size: 1.5rem; }
+    .big-input { font-size: 1.5rem; padding: 14px 18px; }
+    .interlude-words { grid-template-columns: repeat(2, 1fr); }
+    .round-dot { width: 34px; height: 34px; font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="floater">⭐</div>
+<div class="floater">🌸</div>
+<div class="floater">🎈</div>
+<div class="floater">🍭</div>
+
+<div class="app">
+
+  <!-- ===== 歡迎畫面 ===== -->
+  <section class="screen active" id="welcomeScreen">
+    <div class="welcome">
+      <h1 class="title-rainbow">
+        <span>故</span><span>事</span><span>接</span><span>龍</span>
+        <span>大</span><span>冒</span><span>險</span><span>！</span>
+      </h1>
+      <p class="subtitle">一共要玩 4 段，變出一個超長的故事！</p>
+
+      <div class="intro-cards">
+        <div class="intro-card" data-cat="time"><span class="icon">⏰</span><span class="label">時 間</span></div>
+        <div class="intro-card" data-cat="adj"><span class="icon">✨</span><span class="label">形容詞</span></div>
+        <div class="intro-card" data-cat="person"><span class="icon">👦</span><span class="label">人 物</span></div>
+        <div class="intro-card" data-cat="place"><span class="icon">🏞️</span><span class="label">地 點</span></div>
+        <div class="intro-card" data-cat="action"><span class="icon">🎯</span><span class="label">做什麼</span></div>
+        <div class="intro-card" data-cat="thing"><span class="icon">🎁</span><span class="label">物 品</span></div>
+      </div>
+
+      <div class="welcome-note">
+        每段都要想這 <b>6 個詞</b>，玩 <b>4 段</b>就能變成一個完整的故事囉！
+      </div>
+
+      <div>
+        <button class="big-btn" onclick="startGame()">開 始 ✨</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 遊戲畫面 ===== -->
+  <section class="screen" id="gameScreen">
+    <div class="round-indicator">
+      <div class="round-label">正在寫第 <span class="current-round" id="currentRoundNum">1</span> 段 · 共 4 段</div>
+      <div class="round-dots" id="roundDots"></div>
+    </div>
+
+    <div class="progress-slots" id="progressSlots"></div>
+
+    <div class="prompt-box" id="promptBox">
+      <div class="prompt-step" id="promptStep">第 1 關 / 共 6 關</div>
+      <div class="prompt-title" id="promptTitle">
+        <span class="prompt-icon">⏰</span>想一個「時間」
+      </div>
+      <div class="prompt-hint" id="promptHint">故事什麼時候發生呢？</div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" class="big-input" id="wordInput"
+             placeholder="寫在這裡..." maxlength="12"
+             autocomplete="off">
+      <div class="hint-bar">
+        <button class="hint-btn" onclick="toggleHint()">💡 想不到？看提示</button>
+      </div>
+      <div class="hint-panel" id="hintPanel">
+        <div class="hint-panel-title">點一個當作靈感吧！ ✨</div>
+        <div class="hint-chips" id="hintChips"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="big-btn" id="nextBtn" onclick="submitWord()">下一關 →</button>
+      <button class="secondary-btn" onclick="resetGame()">↩️ 重新開始</button>
+    </div>
+  </section>
+
+  <!-- ===== 段落過場畫面 ===== -->
+  <section class="screen" id="interludeScreen">
+    <div class="interlude">
+      <h2 class="interlude-title">
+        <span class="em">🎊</span> 第 <span id="doneRoundNum">1</span> 段 完成！ <span class="em">🎊</span>
+      </h2>
+      <p class="interlude-subtitle">這段你寫了這 6 個詞 👇</p>
+
+      <div class="interlude-summary">
+        <div class="interlude-summary-title">✨ 我的詞語寶藏 ✨</div>
+        <div class="interlude-words" id="interludeWords"></div>
+      </div>
+
+      <button class="big-btn" id="continueBtn" onclick="continueNextRound()">繼續寫第 2 段 →</button>
+    </div>
+  </section>
+
+  <!-- ===== 故事完成畫面 ===== -->
+  <section class="screen" id="storyScreen">
+    <div class="story-screen">
+      <h2 class="celebrate-title">
+        <span class="em">🎉</span> 你的故事完成了！ <span class="em">🎉</span>
+      </h2>
+
+      <div class="story-paper">
+        <div class="story-label" id="storyLabel">✦ 一個小故事 ✦</div>
+        <div class="story-body" id="storyBody"></div>
+      </div>
+
+      <div class="story-actions">
+        <button class="big-btn" onclick="speakStory()">🔊 聽故事</button>
+        <button class="secondary-btn" onclick="newStoryStyle()">🔀 換個故事風格</button>
+        <button class="secondary-btn" onclick="resetGame()">🎲 重新開始</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  /* ===== 詞彙類別資訊 ===== */
+  const CATEGORIES = {
+    time: {
+      label: "時間", icon: "⏰", hint: "故事什麼時候發生呢？",
+      suggestions: ["早上", "中午", "晚上", "昨天", "今天", "暑假", "新年",
+                    "下雨天", "下雪天", "很久以前", "月圓的晚上", "星期日"]
+    },
+    adj: {
+      label: "形容詞", icon: "✨", hint: "主角是什麼樣子的呢？",
+      suggestions: ["快樂的", "可愛的", "勇敢的", "害羞的", "調皮的", "神祕的",
+                    "超級的", "小小的", "聰明的", "溫柔的", "奇怪的", "胖胖的"]
+    },
+    person: {
+      label: "人物", icon: "👦", hint: "誰是故事的主角呢？",
+      suggestions: ["小明", "小美", "媽媽", "爸爸", "老師", "阿公",
+                    "阿嬤", "恐龍", "外星人", "小精靈", "巫婆", "小狗"]
+    },
+    place: {
+      label: "地點", icon: "🏞️", hint: "他在哪裡呢？",
+      suggestions: ["公園", "學校", "家裡", "動物園", "海邊", "山上",
+                    "森林", "月球", "城堡", "夜市", "太空", "操場"]
+    },
+    action: {
+      label: "動作", icon: "🎯", hint: "他在做什麼呢？（例如：吃、玩、跳）",
+      suggestions: ["吃", "看", "玩", "抱", "丟", "踢",
+                    "畫", "送", "追", "藏", "買", "做"]
+    },
+    thing: {
+      label: "物品", icon: "🎁", hint: "故事裡出現了什麼東西？",
+      suggestions: ["蘋果", "氣球", "雨傘", "玩具", "糖果", "書本",
+                    "魔法棒", "蛋糕", "皮球", "機器人", "寶藏", "帽子"]
+    }
+  };
+
+  const STAGES = ["time", "adj", "person", "place", "action", "thing"];
+  const TOTAL_ROUNDS = 4;
+
+  /* ===== 4 段故事模板 ===== */
+  /* 每個模板有 4 個段落陣列，對應 4 輪輸入 */
+  const STORY_TEMPLATES = [
+    {
+      name: "奇妙的一天",
+      rounds: [
+        /* 第 1 段 · 開始 */
+        [
+          "{time}，{adj}{person}來到熱鬧的{place}。",
+          "手上拿著一個{thing}，",
+          "準備要開心地{action}。"
+        ],
+        /* 第 2 段 · 發生 */
+        [
+          "過了不久，{time}，",
+          "{person}在{place}發現了一個{adj}的{thing}，",
+          "忍不住{action}了起來。"
+        ],
+        /* 第 3 段 · 驚奇 */
+        [
+          "突然！{time}的時候，",
+          "{place}出現了一個{adj}的{thing}！",
+          "{person}勇敢地決定要{action}。"
+        ],
+        /* 第 4 段 · 結尾 */
+        [
+          "{time}，{person}回到了溫暖的{place}。",
+          "抱著{adj}的{thing}，",
+          "一邊{action}，一邊笑得好開心。"
+        ]
+      ]
+    },
+    {
+      name: "奇幻冒險",
+      rounds: [
+        [
+          "從前從前，有一個{adj}{person}。",
+          "{time}，他踏上旅程來到{place}，",
+          "帶著心愛的{thing}，打算要去{action}。"
+        ],
+        [
+          "{time}，路上遇到了麻煩——",
+          "一個{adj}的影子躲在{place}！",
+          "{person}拿出{thing}，悄悄地{action}。"
+        ],
+        [
+          "接著{time}，",
+          "{person}爬上最高的{place}，發現了{adj}的{thing}！",
+          "他決定勇敢地{action}，完成使命。"
+        ],
+        [
+          "{time}，{person}終於回家了。",
+          "他把{thing}放在{place}裡，",
+          "還把{action}的故事告訴大家，成為{adj}的英雄。"
+        ]
+      ]
+    },
+    {
+      name: "搞笑故事",
+      rounds: [
+        [
+          "你絕對想不到！{time}，",
+          "一個{adj}{person}竟然跑到{place}去，",
+          "手上的{thing}讓他決定要{action}！"
+        ],
+        [
+          "{time}的時候，更好笑的事情發生了——",
+          "{place}裡所有的東西都變成{adj}的{thing}！",
+          "{person}忍不住邊笑邊{action}。"
+        ],
+        [
+          "然後呢，{time}又來了一個客人，",
+          "是一個更{adj}的傢伙，手上拿著大大的{thing}！",
+          "他們一起衝到{place}，瘋狂地{action}。"
+        ],
+        [
+          "最後{time}，大家都累得躺在地上。",
+          "{person}把{thing}放在{place}旁邊，",
+          "心裡想：『今天{action}得真是{adj}呀！』"
+        ]
+      ]
+    }
+  ];
+
+  /* ===== 遊戲狀態 ===== */
+  let currentRound = 0;      // 0~3
+  let currentStage = 0;      // 0~5
+  let allPicks = [];         // 4 個 round 物件
+  let currentTemplateIndex = 0;
+
+  /* ===== 畫面切換 ===== */
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+
+  /* ===== 開始 / 重置 ===== */
+  function startGame() {
+    allPicks = Array.from({ length: TOTAL_ROUNDS }, () => ({}));
+    currentRound = 0;
+    currentStage = 0;
+    buildProgressSlots();
+    renderRoundDots();
+    renderStage();
+    showScreen("gameScreen");
+  }
+
+  function resetGame() { startGame(); }
+
+  /* ===== 輪數指示器 ===== */
+  function renderRoundDots() {
+    const box = document.getElementById("roundDots");
+    let html = "";
+    for (let i = 0; i < TOTAL_ROUNDS; i++) {
+      let cls = "round-dot";
+      let content = (i + 1).toString();
+      if (i < currentRound) { cls += " done"; content = "✓"; }
+      else if (i === currentRound) { cls += " current"; }
+      html += `<div class="${cls}">${content}</div>`;
+    }
+    box.innerHTML = html;
+    document.getElementById("currentRoundNum").textContent = currentRound + 1;
+  }
+
+  /* ===== 建立當前輪的進度槽 ===== */
+  function buildProgressSlots() {
+    const box = document.getElementById("progressSlots");
+    box.innerHTML = STAGES.map(cat => {
+      const info = CATEGORIES[cat];
+      return `
+        <div class="slot" data-cat="${cat}" id="slot-${cat}">
+          <div class="slot-icon">${info.icon}</div>
+          <div class="slot-label">${info.label}</div>
+          <div class="slot-value"></div>
+        </div>`;
+    }).join("");
+  }
+
+  /* ===== 顯示當前關卡 ===== */
+  function renderStage() {
+    const cat = STAGES[currentStage];
+    const info = CATEGORIES[cat];
+
+    const box = document.getElementById("promptBox");
+    box.setAttribute("data-cat", cat);
+    document.getElementById("promptStep").textContent = `第 ${currentStage + 1} 關 / 共 6 關`;
+    document.getElementById("promptTitle").innerHTML =
+      `<span class="prompt-icon">${info.icon}</span>想一個「${info.label}」`;
+    document.getElementById("promptHint").textContent = info.hint;
+
+    document.querySelectorAll(".slot").forEach(s => s.classList.remove("current"));
+    document.getElementById(`slot-${cat}`).classList.add("current");
+
+    const input = document.getElementById("wordInput");
+    input.value = "";
+    input.classList.remove("shake");
+    input.focus();
+
+    document.getElementById("hintPanel").classList.remove("show");
+
+    document.getElementById("nextBtn").textContent =
+      currentStage === STAGES.length - 1 ? "完成這段 🌟" : "下一關 →";
+
+    renderHints();
+  }
+
+  /* ===== 提示 ===== */
+  function renderHints() {
+    const cat = STAGES[currentStage];
+    const info = CATEGORIES[cat];
+    const picks5 = [...info.suggestions].sort(() => Math.random() - 0.5).slice(0, 6);
+    document.getElementById("hintChips").innerHTML = picks5.map(w =>
+      `<button class="hint-chip" data-cat="${cat}" onclick="useHint('${w}')">${w}</button>`
+    ).join("");
+  }
+
+  function toggleHint() {
+    document.getElementById("hintPanel").classList.toggle("show");
+  }
+
+  function useHint(word) {
+    const input = document.getElementById("wordInput");
+    input.value = word;
+    input.focus();
+    document.getElementById("hintPanel").classList.remove("show");
+  }
+
+  /* ===== 送出詞語 ===== */
+  function submitWord() {
+    const input = document.getElementById("wordInput");
+    const word = input.value.trim();
+
+    if (!word) {
+      input.classList.remove("shake");
+      void input.offsetWidth;
+      input.classList.add("shake");
+      return;
+    }
+
+    const cat = STAGES[currentStage];
+    allPicks[currentRound][cat] = word;
+
+    const slot = document.getElementById(`slot-${cat}`);
+    slot.classList.remove("current");
+    slot.classList.add("filled");
+    slot.querySelector(".slot-value").textContent = word;
+
+    currentStage++;
+    if (currentStage >= STAGES.length) {
+      /* 本輪結束 */
+      if (currentRound >= TOTAL_ROUNDS - 1) {
+        /* 最後一輪 → 顯示故事 */
+        showStory();
+      } else {
+        /* 顯示過場畫面 */
+        showInterlude();
+      }
+    } else {
+      renderStage();
+    }
+  }
+
+  /* Enter 鍵送出（避開中文輸入法組字中的 Enter） */
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("wordInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) {
+        e.preventDefault();
+        submitWord();
+      }
+    });
+  });
+
+  /* ===== 過場畫面 ===== */
+  function showInterlude() {
+    const round = allPicks[currentRound];
+    document.getElementById("doneRoundNum").textContent = currentRound + 1;
+    document.getElementById("continueBtn").textContent = `繼續寫第 ${currentRound + 2} 段 →`;
+
+    const box = document.getElementById("interludeWords");
+    box.innerHTML = STAGES.map(cat => {
+      const info = CATEGORIES[cat];
+      return `
+        <div class="interlude-word" data-cat="${cat}">
+          <span class="label">${info.icon} ${info.label}</span>
+          <span class="value">${round[cat]}</span>
+        </div>`;
+    }).join("");
+
+    showScreen("interludeScreen");
+    launchConfetti(20);
+  }
+
+  function continueNextRound() {
+    currentRound++;
+    currentStage = 0;
+    buildProgressSlots();
+    renderRoundDots();
+    renderStage();
+    showScreen("gameScreen");
+  }
+
+  /* ===== 顯示故事 ===== */
+  function showStory() {
+    currentTemplateIndex = Math.floor(Math.random() * STORY_TEMPLATES.length);
+    renderStory();
+    showScreen("storyScreen");
+    launchConfetti(70);
+  }
+
+  function renderStory() {
+    const template = STORY_TEMPLATES[currentTemplateIndex];
+    document.getElementById("storyLabel").textContent = `✦ ${template.name} ✦`;
+
+    const paragraphsHtml = template.rounds.map((roundParts, idx) => {
+      const picks = allPicks[idx];
+      const linesHtml = roundParts.map(part => highlight(part, picks)).join("<br>");
+      return `
+        <div class="story-paragraph">
+          <span class="story-paragraph-label">第 ${idx + 1} 段</span>
+          ${linesHtml}
+        </div>`;
+    }).join("");
+
+    document.getElementById("storyBody").innerHTML = paragraphsHtml;
+  }
+
+  function highlight(part, picks) {
+    return part
+      .replace(/\{time\}/g, `<span class="w" data-cat="time">${picks.time}</span>`)
+      .replace(/\{adj\}/g, `<span class="w" data-cat="adj">${picks.adj}</span>`)
+      .replace(/\{person\}/g, `<span class="w" data-cat="person">${picks.person}</span>`)
+      .replace(/\{place\}/g, `<span class="w" data-cat="place">${picks.place}</span>`)
+      .replace(/\{action\}/g, `<span class="w" data-cat="action">${picks.action}</span>`)
+      .replace(/\{thing\}/g, `<span class="w" data-cat="thing">${picks.thing}</span>`);
+  }
+
+  function newStoryStyle() {
+    let next = Math.floor(Math.random() * STORY_TEMPLATES.length);
+    if (STORY_TEMPLATES.length > 1) {
+      while (next === currentTemplateIndex) {
+        next = Math.floor(Math.random() * STORY_TEMPLATES.length);
+      }
+    }
+    currentTemplateIndex = next;
+    renderStory();
+  }
+
+  /* ===== 朗讀 ===== */
+  function speakStory() {
+    if (!("speechSynthesis" in window)) {
+      alert("抱歉，您的瀏覽器不支援朗讀功能 😅");
+      return;
+    }
+    const template = STORY_TEMPLATES[currentTemplateIndex];
+    const plain = template.rounds.map((roundParts, idx) => {
+      const picks = allPicks[idx];
+      return roundParts.map(p =>
+        p.replace(/\{time\}/g, picks.time)
+         .replace(/\{adj\}/g, picks.adj)
+         .replace(/\{person\}/g, picks.person)
+         .replace(/\{place\}/g, picks.place)
+         .replace(/\{action\}/g, picks.action)
+         .replace(/\{thing\}/g, picks.thing)
+      ).join("");
+    }).join("\n");
+
+    const utter = new SpeechSynthesisUtterance(plain);
+    utter.lang = "zh-TW";
+    utter.rate = 0.85;
+    utter.pitch = 1.1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+  }
+
+  /* ===== 彩帶 ===== */
+  function launchConfetti(count = 50) {
+    const colors = ["#FFB84D", "#FF7FB6", "#FF6B6B", "#5EC57F", "#4FC3E0", "#B57EDC"];
+    for (let i = 0; i < count; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDuration = (2 + Math.random() * 2) + "s";
+      c.style.animationDelay = Math.random() * 0.5 + "s";
+      if (Math.random() > 0.5) c.style.borderRadius = "50%";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }
+  }
+</script>
+
+</body>
+</html>
