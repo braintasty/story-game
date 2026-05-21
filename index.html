@@ -599,6 +599,7 @@
   .story-paragraph:nth-child(2) { animation-delay: 1s; }
   .story-paragraph:nth-child(3) { animation-delay: 1.8s; }
   .story-paragraph:nth-child(4) { animation-delay: 2.6s; }
+  .story-paragraph:nth-child(5) { animation-delay: 3.4s; }
 
   .story-paragraph-label {
     font-size: 0.9rem;
@@ -636,6 +637,83 @@
     margin-top: 20px;
   }
 
+  /* ===== 段數選擇器 ===== */
+  .round-picker {
+    margin: 0 auto 28px;
+    max-width: 620px;
+  }
+  .round-picker-title {
+    font-family: 'LXGW WenKai TC', serif;
+    font-size: 1.2rem;
+    color: var(--ink);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .round-picker-title b { color: var(--color-action); }
+  .round-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .round-option {
+    font-family: 'LXGW WenKai TC', serif;
+    font-weight: 700;
+    background: var(--paper);
+    border: 3px solid var(--ink-soft);
+    border-radius: 18px;
+    padding: 14px 8px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--ink);
+    box-shadow: 0 4px 0 var(--ink-soft);
+  }
+  .round-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 0 var(--ink-soft);
+  }
+  .round-option .num {
+    display: block;
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: 4px;
+    color: var(--color-action);
+  }
+  .round-option .label-txt {
+    display: block;
+    font-size: 1rem;
+    color: var(--ink-soft);
+  }
+  .round-option .tag {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    font-weight: 400;
+  }
+  .round-option.selected {
+    border-color: var(--ink);
+    background: linear-gradient(135deg, #FFF4D6, #FFE0EF);
+    box-shadow: 0 4px 0 var(--ink);
+    transform: translateY(0);
+  }
+  .round-option.selected .num { color: var(--color-person); }
+  .round-option.selected .label-txt,
+  .round-option.selected .tag { color: var(--ink); }
+
+  /* 手機適應 */
+  @media (max-width: 640px) {
+    .progress-slots { grid-template-columns: repeat(3, 1fr); }
+    .slot { min-height: 68px; }
+    .intro-cards { grid-template-columns: repeat(2, 1fr); }
+    .prompt-title { font-size: 1.5rem; }
+    .big-input { font-size: 1.5rem; padding: 14px 18px; }
+    .interlude-words { grid-template-columns: repeat(2, 1fr); }
+    .round-dot { width: 34px; height: 34px; font-size: 1rem; }
+    .round-options { grid-template-columns: repeat(2, 1fr); }
+  }
+
   /* 彩帶 */
   .confetti {
     position: fixed;
@@ -648,17 +726,6 @@
   }
   @keyframes fall {
     to { transform: translateY(120vh) rotate(720deg); opacity: 0; }
-  }
-
-  /* 手機適應 */
-  @media (max-width: 640px) {
-    .progress-slots { grid-template-columns: repeat(3, 1fr); }
-    .slot { min-height: 68px; }
-    .intro-cards { grid-template-columns: repeat(2, 1fr); }
-    .prompt-title { font-size: 1.5rem; }
-    .big-input { font-size: 1.5rem; padding: 14px 18px; }
-    .interlude-words { grid-template-columns: repeat(2, 1fr); }
-    .round-dot { width: 34px; height: 34px; font-size: 1rem; }
   }
 </style>
 </head>
@@ -678,7 +745,7 @@
         <span>故</span><span>事</span><span>接</span><span>龍</span>
         <span>大</span><span>冒</span><span>險</span><span>！</span>
       </h1>
-      <p class="subtitle">一共要玩 4 段，變出一個超長的故事！</p>
+      <p class="subtitle">每段想 6 個詞，變出一個超長的故事！</p>
 
       <div class="intro-cards">
         <div class="intro-card" data-cat="time"><span class="icon">⏰</span><span class="label">時 間</span></div>
@@ -689,8 +756,31 @@
         <div class="intro-card" data-cat="thing"><span class="icon">🎁</span><span class="label">物 品</span></div>
       </div>
 
+      <!-- 段數選擇器 -->
+      <div class="round-picker">
+        <div class="round-picker-title">先選一下要玩 <b>幾段故事</b> 吧！</div>
+        <div class="round-options" id="roundOptions">
+          <button class="round-option" data-rounds="2">
+            <span class="num">2</span><span class="label-txt">段</span>
+            <span class="tag">快速版 🚀</span>
+          </button>
+          <button class="round-option" data-rounds="3">
+            <span class="num">3</span><span class="label-txt">段</span>
+            <span class="tag">輕鬆版 🌱</span>
+          </button>
+          <button class="round-option selected" data-rounds="4">
+            <span class="num">4</span><span class="label-txt">段</span>
+            <span class="tag">標準版 ⭐</span>
+          </button>
+          <button class="round-option" data-rounds="5">
+            <span class="num">5</span><span class="label-txt">段</span>
+            <span class="tag">史詩版 👑</span>
+          </button>
+        </div>
+      </div>
+
       <div class="welcome-note">
-        每段都要想這 <b>6 個詞</b>，玩 <b>4 段</b>就能變成一個完整的故事囉！
+        每段都要想這 <b>6 個詞</b>，最後會變成一個完整的故事喔！
       </div>
 
       <div>
@@ -702,7 +792,7 @@
   <!-- ===== 遊戲畫面 ===== -->
   <section class="screen" id="gameScreen">
     <div class="round-indicator">
-      <div class="round-label">正在寫第 <span class="current-round" id="currentRoundNum">1</span> 段 · 共 4 段</div>
+      <div class="round-label">正在寫第 <span class="current-round" id="currentRoundNum">1</span> 段 · 共 <span id="totalRoundNum">4</span> 段</div>
       <div class="round-dots" id="roundDots"></div>
     </div>
 
@@ -731,7 +821,7 @@
 
     <div class="controls">
       <button class="big-btn" id="nextBtn" onclick="submitWord()">下一關 →</button>
-      <button class="secondary-btn" onclick="resetGame()">↩️ 重新開始</button>
+      <button class="secondary-btn" onclick="backToWelcome()">↩️ 重新開始</button>
     </div>
   </section>
 
@@ -767,7 +857,7 @@
       <div class="story-actions">
         <button class="big-btn" onclick="speakStory()">🔊 聽故事</button>
         <button class="secondary-btn" onclick="newStoryStyle()">🔀 換個故事風格</button>
-        <button class="secondary-btn" onclick="resetGame()">🎲 重新開始</button>
+        <button class="secondary-btn" onclick="backToWelcome()">🎲 重新開始</button>
       </div>
     </div>
   </section>
@@ -810,33 +900,39 @@
   };
 
   const STAGES = ["time", "adj", "person", "place", "action", "thing"];
-  const TOTAL_ROUNDS = 4;
 
-  /* ===== 4 段故事模板 ===== */
-  /* 每個模板有 4 個段落陣列，對應 4 輪輸入 */
+  /* ===== 故事模板 =====
+     每個模板有 5 個段落（開場 / 發展 / 轉折 / 高潮 / 結尾）
+     依使用者選擇的段數，挑出對應段落組合 */
   const STORY_TEMPLATES = [
     {
       name: "奇妙的一天",
       rounds: [
-        /* 第 1 段 · 開始 */
+        /* 0 · 開場 */
         [
           "{time}，{adj}{person}來到熱鬧的{place}。",
           "手上拿著一個{thing}，",
           "準備要開心地{action}。"
         ],
-        /* 第 2 段 · 發生 */
+        /* 1 · 發展 */
         [
           "過了不久，{time}，",
           "{person}在{place}發現了一個{adj}的{thing}，",
           "忍不住{action}了起來。"
         ],
-        /* 第 3 段 · 驚奇 */
+        /* 2 · 轉折 */
         [
           "突然！{time}的時候，",
           "{place}出現了一個{adj}的{thing}！",
-          "{person}勇敢地決定要{action}。"
+          "大家都嚇了一跳。"
         ],
-        /* 第 4 段 · 結尾 */
+        /* 3 · 高潮 */
+        [
+          "於是{person}勇敢地決定要{action}，",
+          "想把{adj}的{thing}帶回{place}，",
+          "心裡又緊張又興奮。"
+        ],
+        /* 4 · 結尾 */
         [
           "{time}，{person}回到了溫暖的{place}。",
           "抱著{adj}的{thing}，",
@@ -847,21 +943,31 @@
     {
       name: "奇幻冒險",
       rounds: [
+        /* 0 · 開場 */
         [
           "從前從前，有一個{adj}{person}。",
           "{time}，他踏上旅程來到{place}，",
           "帶著心愛的{thing}，打算要去{action}。"
         ],
+        /* 1 · 發展 */
         [
           "{time}，路上遇到了麻煩——",
           "一個{adj}的影子躲在{place}！",
           "{person}拿出{thing}，悄悄地{action}。"
         ],
+        /* 2 · 轉折 */
         [
           "接著{time}，",
-          "{person}爬上最高的{place}，發現了{adj}的{thing}！",
-          "他決定勇敢地{action}，完成使命。"
+          "{person}爬上最高的{place}，",
+          "竟然發現了{adj}的{thing}閃閃發光！"
         ],
+        /* 3 · 高潮 */
+        [
+          "他決定要勇敢地{action}，",
+          "把{adj}的{thing}收進口袋，",
+          "完成這個重要的使命。"
+        ],
+        /* 4 · 結尾 */
         [
           "{time}，{person}終於回家了。",
           "他把{thing}放在{place}裡，",
@@ -872,35 +978,282 @@
     {
       name: "搞笑故事",
       rounds: [
+        /* 0 · 開場 */
         [
           "你絕對想不到！{time}，",
           "一個{adj}{person}竟然跑到{place}去，",
           "手上的{thing}讓他決定要{action}！"
         ],
+        /* 1 · 發展 */
         [
           "{time}的時候，更好笑的事情發生了——",
           "{place}裡所有的東西都變成{adj}的{thing}！",
           "{person}忍不住邊笑邊{action}。"
         ],
+        /* 2 · 轉折 */
         [
           "然後呢，{time}又來了一個客人，",
-          "是一個更{adj}的傢伙，手上拿著大大的{thing}！",
-          "他們一起衝到{place}，瘋狂地{action}。"
+          "是一個更{adj}的傢伙，",
+          "手上拿著大大的{thing}！"
         ],
+        /* 3 · 高潮 */
+        [
+          "他們一起衝到{place}，",
+          "瘋狂地{action}，",
+          "整個地方都被弄得{adj}得不得了。"
+        ],
+        /* 4 · 結尾 */
         [
           "最後{time}，大家都累得躺在地上。",
           "{person}把{thing}放在{place}旁邊，",
           "心裡想：『今天{action}得真是{adj}呀！』"
         ]
       ]
+    },
+    {
+      name: "偵探解謎",
+      rounds: [
+        /* 0 · 開場 */
+        [
+          "{time}，{adj}名偵探{person}收到了一封神祕的信，",
+          "信上說：『請立刻趕到{place}！』",
+          "因為那裡丟了一個重要的{thing}，需要他來{action}。"
+        ],
+        /* 1 · 發展 */
+        [
+          "{time}，{person}在{place}彎下腰仔細地{action}，",
+          "竟然找到了一個{adj}的{thing}，",
+          "他瞇起眼睛說：『嗯～這肯定是重要的線索！』"
+        ],
+        /* 2 · 轉折 */
+        [
+          "突然！{time}的時候，",
+          "{place}的角落出現了一個{adj}的影子，",
+          "手上居然抓著那個{thing}，正想偷偷{action}逃走！"
+        ],
+        /* 3 · 高潮 */
+        [
+          "{person}馬上跳出來，{adj}地大喊：『站住！別想跑！』",
+          "他高高地舉起{thing}，",
+          "勇敢地{action}，把嫌犯抓了個正著。"
+        ],
+        /* 4 · 結尾 */
+        [
+          "{time}，案件成功破了。",
+          "{person}走出{place}，把{thing}還給失主，",
+          "大家都拍手稱讚：『真是個{adj}的偵探！下次再一起{action}！』"
+        ]
+      ]
+    },
+    {
+      name: "鬼怪驚奇",
+      rounds: [
+        /* 0 · 開場 */
+        [
+          "{time}，{adj}{person}經過陰森森的{place}，",
+          "手上緊緊抓著一個{thing}壯膽，",
+          "心裡小聲說：『我才不怕，我要勇敢地{action}！』"
+        ],
+        /* 1 · 發展 */
+        [
+          "走著走著，{time}，突然聽到「咻——」的一聲，",
+          "{place}的窗戶飄出一個{adj}的{thing}！",
+          "{person}嚇得不敢{action}，腿都軟了。"
+        ],
+        /* 2 · 轉折 */
+        [
+          "等了好久，{time}，{person}仔細一看——",
+          "原來那是一隻{adj}的小鬼，",
+          "正抱著{thing}在{place}哭哭啼啼。"
+        ],
+        /* 3 · 高潮 */
+        [
+          "{person}鼓起勇氣，慢慢地走過去，",
+          "決定要{action}，把{thing}送給牠當禮物，",
+          "讓這個{adj}的小鬼開心起來。"
+        ],
+        /* 4 · 結尾 */
+        [
+          "{time}，他們竟然變成了好朋友！",
+          "一起在{place}{action}，",
+          "拿著{thing}玩到天亮，真是一個{adj}的夜晚。"
+        ]
+      ]
+    },
+    {
+      name: "太空探險",
+      rounds: [
+        /* 0 · 開場 */
+        [
+          "{time}，{adj}太空人{person}駕著太空船，",
+          "降落在遙遠的{place}星球，",
+          "任務是找到傳說中的{thing}，並且把它{action}帶回地球。"
+        ],
+        /* 1 · 發展 */
+        [
+          "{time}，{person}打開頭盔，發現一隻{adj}的外星小生物，",
+          "正在{place}旁邊{action}著什麼，",
+          "嘴裡還含著一個閃閃發光的{thing}！"
+        ],
+        /* 2 · 轉折 */
+        [
+          "突然，{time}，「咻——」一艘飛碟從天而降！",
+          "降落在{place}的中央，",
+          "走出一個{adj}的外星人，手上正好拿著{thing}。"
+        ],
+        /* 3 · 高潮 */
+        [
+          "{person}沒有逃跑，反而拿出{thing}當作見面禮，",
+          "用{adj}的笑容跟外星人打招呼，",
+          "兩個人決定一起在這裡{action}，成為宇宙好朋友。"
+        ],
+        /* 4 · 結尾 */
+        [
+          "{time}，太空船終於回到地球。",
+          "{person}降落在{place}，帶回了{adj}的{thing}，",
+          "把太空探險的故事告訴大家，一起興奮地{action}。"
+        ]
+      ]
+    },
+    {
+      name: "校園日常",
+      rounds: [
+        /* 0 · 開場 */
+        [
+          "{time}，{adj}{person}揹著書包走進{place}，",
+          "書包裡偷偷藏了一個{thing}，",
+          "今天他打算跟好朋友一起{action}！"
+        ],
+        /* 1 · 發展 */
+        [
+          "下課鐘響了，{time}，",
+          "同學們衝到{place}，圍著那個{adj}的{thing}，",
+          "你一句我一句，開始七嘴八舌地{action}起來。"
+        ],
+        /* 2 · 轉折 */
+        [
+          "正開心的時候，{time}，",
+          "老師突然出現在{place}的門口，",
+          "看到那個{adj}的{thing}，眉頭皺了一下！"
+        ],
+        /* 3 · 高潮 */
+        [
+          "{person}深呼吸，{adj}地走到老師面前，",
+          "拿著{thing}小聲說：『老師，我可以解釋……』",
+          "他鼓起勇氣，把整件事好好地{action}清楚。"
+        ],
+        /* 4 · 結尾 */
+        [
+          "{time}，放學鈴聲響起，",
+          "大家在{place}揮揮手說再見，",
+          "拿著{thing}一邊走一邊{action}，今天真是{adj}的一天。"
+        ]
+      ]
+    },
+    {
+      name: "戲劇舞台",
+      rounds: [
+        /* 0 · 開場 */
+        [
+          "噹！噹！噹！{time}，紅色布幕緩緩拉開——",
+          "{adj}的{person}英姿煥發地站在{place}的舞台上，",
+          "他高舉手中的{thing}，宣布：『今天，我要{action}！』"
+        ],
+        /* 1 · 發展 */
+        [
+          "「啊——！」{time}，台下傳來一聲驚呼，",
+          "{place}的角落，竟然冒出了一個{adj}的{thing}！",
+          "{person}究竟該怎麼{action}才好呢？觀眾都屏住了呼吸。"
+        ],
+        /* 2 · 轉折 */
+        [
+          "燈光一閃，{time}，場景換到了神祕的{place}！",
+          "那個{adj}的{thing}緩緩地開口說話，",
+          "聲音迴盪在整個舞台，全場都安靜了下來。"
+        ],
+        /* 3 · 高潮 */
+        [
+          "音樂響起！{person}帥氣地一個轉身，",
+          "把{thing}高高舉起，{adj}地大喊：",
+          "『看我的——{action}！』全場觀眾爆出歡呼聲。"
+        ],
+        /* 4 · 結尾 */
+        [
+          "{time}，謝幕的時間到了。",
+          "{person}站在{place}的中央深深一鞠躬，",
+          "把{adj}的{thing}送給觀眾，邀請大家一起{action}。"
+        ]
+      ]
+    },
+    {
+      name: "溫馨家庭",
+      rounds: [
+        /* 0 · 開場 */
+        [
+          "{time}，{adj}{person}靜靜地坐在{place}裡，",
+          "手上拿著一個小小的{thing}，",
+          "心裡想著：『今天，要好好地{action}，給家人一個驚喜。』"
+        ],
+        /* 1 · 發展 */
+        [
+          "{time}，家人陸陸續續回到家了，",
+          "大家圍坐在{place}，",
+          "看著那個{adj}的{thing}，開心地一起{action}起來。"
+        ],
+        /* 2 · 轉折 */
+        [
+          "{time}，奶奶從{place}慢慢走了出來，",
+          "手裡捧著一個{adj}的{thing}，",
+          "笑咪咪地說：『這個，是要送給你的喔。』"
+        ],
+        /* 3 · 高潮 */
+        [
+          "{person}的眼眶有點濕濕的，",
+          "輕輕地{action}，抱著那個{adj}的{thing}不放，",
+          "心裡好溫暖，這就是家人才會給的禮物呀。"
+        ],
+        /* 4 · 結尾 */
+        [
+          "{time}，全家人坐在{place}，",
+          "一邊{action}，一邊聊著手上的{thing}，",
+          "今天的時光真是{adj}又難忘。"
+        ]
+      ]
     }
   ];
 
+  /* 根據要玩幾段，從 5 個段落中挑出哪幾個 index */
+  const ROUND_SELECTORS = {
+    2: [0, 4],            // 開場 + 結尾
+    3: [0, 2, 4],         // 開場 + 轉折 + 結尾
+    4: [0, 1, 3, 4],      // 開場 + 發展 + 高潮 + 結尾
+    5: [0, 1, 2, 3, 4]    // 全部
+  };
+
   /* ===== 遊戲狀態 ===== */
-  let currentRound = 0;      // 0~3
+  let totalRounds = 4;       // 由使用者選擇，預設 4
+  let currentRound = 0;      // 0 ~ totalRounds-1
   let currentStage = 0;      // 0~5
-  let allPicks = [];         // 4 個 round 物件
+  let allPicks = [];         // totalRounds 個 round 物件
   let currentTemplateIndex = 0;
+
+  /* ===== 段數選擇器 ===== */
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".round-option").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".round-option").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        totalRounds = parseInt(btn.dataset.rounds, 10);
+      });
+    });
+
+    document.getElementById("wordInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) {
+        e.preventDefault();
+        submitWord();
+      }
+    });
+  });
 
   /* ===== 畫面切換 ===== */
   function showScreen(id) {
@@ -908,24 +1261,27 @@
     document.getElementById(id).classList.add("active");
   }
 
-  /* ===== 開始 / 重置 ===== */
+  function backToWelcome() {
+    showScreen("welcomeScreen");
+  }
+
+  /* ===== 開始 ===== */
   function startGame() {
-    allPicks = Array.from({ length: TOTAL_ROUNDS }, () => ({}));
+    allPicks = Array.from({ length: totalRounds }, () => ({}));
     currentRound = 0;
     currentStage = 0;
+    document.getElementById("totalRoundNum").textContent = totalRounds;
     buildProgressSlots();
     renderRoundDots();
     renderStage();
     showScreen("gameScreen");
   }
 
-  function resetGame() { startGame(); }
-
   /* ===== 輪數指示器 ===== */
   function renderRoundDots() {
     const box = document.getElementById("roundDots");
     let html = "";
-    for (let i = 0; i < TOTAL_ROUNDS; i++) {
+    for (let i = 0; i < totalRounds; i++) {
       let cls = "round-dot";
       let content = (i + 1).toString();
       if (i < currentRound) { cls += " done"; content = "✓"; }
@@ -982,8 +1338,8 @@
   function renderHints() {
     const cat = STAGES[currentStage];
     const info = CATEGORIES[cat];
-    const picks5 = [...info.suggestions].sort(() => Math.random() - 0.5).slice(0, 6);
-    document.getElementById("hintChips").innerHTML = picks5.map(w =>
+    const picks6 = [...info.suggestions].sort(() => Math.random() - 0.5).slice(0, 6);
+    document.getElementById("hintChips").innerHTML = picks6.map(w =>
       `<button class="hint-chip" data-cat="${cat}" onclick="useHint('${w}')">${w}</button>`
     ).join("");
   }
@@ -1022,7 +1378,7 @@
     currentStage++;
     if (currentStage >= STAGES.length) {
       /* 本輪結束 */
-      if (currentRound >= TOTAL_ROUNDS - 1) {
+      if (currentRound >= totalRounds - 1) {
         /* 最後一輪 → 顯示故事 */
         showStory();
       } else {
@@ -1033,16 +1389,6 @@
       renderStage();
     }
   }
-
-  /* Enter 鍵送出（避開中文輸入法組字中的 Enter） */
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("wordInput").addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) {
-        e.preventDefault();
-        submitWord();
-      }
-    });
-  });
 
   /* ===== 過場畫面 ===== */
   function showInterlude() {
@@ -1081,11 +1427,19 @@
     launchConfetti(70);
   }
 
+  /* 依使用者選擇的段數，從 5 個段落範本中挑出要用的段落 */
+  function getSelectedRounds(template) {
+    const indexes = ROUND_SELECTORS[totalRounds] || ROUND_SELECTORS[4];
+    return indexes.map(i => template.rounds[i]);
+  }
+
   function renderStory() {
     const template = STORY_TEMPLATES[currentTemplateIndex];
     document.getElementById("storyLabel").textContent = `✦ ${template.name} ✦`;
 
-    const paragraphsHtml = template.rounds.map((roundParts, idx) => {
+    const usedRounds = getSelectedRounds(template);
+
+    const paragraphsHtml = usedRounds.map((roundParts, idx) => {
       const picks = allPicks[idx];
       const linesHtml = roundParts.map(part => highlight(part, picks)).join("<br>");
       return `
@@ -1126,7 +1480,8 @@
       return;
     }
     const template = STORY_TEMPLATES[currentTemplateIndex];
-    const plain = template.rounds.map((roundParts, idx) => {
+    const usedRounds = getSelectedRounds(template);
+    const plain = usedRounds.map((roundParts, idx) => {
       const picks = allPicks[idx];
       return roundParts.map(p =>
         p.replace(/\{time\}/g, picks.time)
